@@ -1,22 +1,5 @@
-level_map=[
-    '                XXXXXXXXXXXXXX',
-    '        XXXXX                 ',
-    '                              ',
-    ' XXXX                         ',
-    '                      XXXXXX  ',
-    '       XXXXXXX                ',
-    '                              ',
-    '               XXXX           ',
-    '                              ',
-    '                              ',
-    '           XXX                ',
-    '  XXXX                        ',
-    '      XXXXX                   ',
-    '            XXXXX     P       ',
-    'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-    ]
+horizontal_tile_number = 25
+tile_size = 64
+SCREEN_WIDTH = horizontal_tile_number * tile_size
+SCREEN_HEIGHT = 960 
 
-
-BLOCK_SIZE=64
-SCREEN_WIDTH = 1920
-SCREEN_HEIGHT = 960

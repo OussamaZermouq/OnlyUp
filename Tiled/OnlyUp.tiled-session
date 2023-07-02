@@ -1,0 +1,96 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "Levels/Level.tmx",
+    "expandedProjectPaths": [
+        ".",
+        "Levels"
+    ],
+    "fileStates": {
+        "Levels/Level.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 802,
+                "y": 478.6666666666666
+            }
+        },
+        "Levels/tilesets/coin_tiles.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 3
+        },
+        "Levels/tilesets/crate.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 3
+        },
+        "Levels/tilesets/create.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 3
+        },
+        "Levels/tilesets/enemy_tile.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Levels/tilesets/palms.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 3
+        },
+        "Levels/tilesets/player_tiles.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Levels/tilesets/setup_tiles.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 3
+        },
+        "Levels/tilesets/terrain_tiles.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 3
+        }
+    },
+    "last.exportedFilePath": "C:/Users/oussa/Documents/Dev/Python/OnlyUp/Tiled/Levels/test",
+    "last.imagePath": "C:/Users/oussa/Documents/Dev/Python/OnlyUp/Tiled/graphics/enemy",
+    "map.height": 45,
+    "map.lastUsedExportFilter": "CSV files (*.csv)",
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 64,
+    "map.tileWidth": 64,
+    "map.width": 25,
+    "openFiles": [
+        "Levels/tilesets/terrain_tiles.tsx",
+        "Levels/Level.tmx",
+        "Levels/tilesets/coin_tiles.tsx",
+        "Levels/tilesets/palms.tsx",
+        "Levels/tilesets/crate.tsx",
+        "Levels/tilesets/player_tiles.tsx",
+        "Levels/tilesets/enemy_tile.tsx"
+    ],
+    "project": "OnlyUp.tiled-project",
+    "recentFiles": [
+        "Levels/tilesets/terrain_tiles.tsx",
+        "Levels/tilesets/enemy_tile.tsx",
+        "Levels/tilesets/player_tiles.tsx",
+        "Levels/tilesets/crate.tsx",
+        "Levels/tilesets/palms.tsx",
+        "Levels/tilesets/coin_tiles.tsx",
+        "Levels/Level.tmx",
+        "Levels/tilesets/setup_tiles.tsx",
+        "Levels/tilesets/create.tsx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 64,
+        "width": 64
+    },
+    "tileset.type": 0
+}
