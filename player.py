@@ -8,11 +8,8 @@ class Player (pygame.sprite.Sprite):
         self.frame_index=0
         self.animation_speed=0.15
         self.image = self.animations['idle'][self.frame_index]
-        #self.image = pygame.Surface((32,64))
-        #self.image.fill('red')
         self.rect = self.image.get_rect(topleft=pos)
 
-        
         #dust 
         self.import_dust_run_particle()
         self.dust_frame_index=0
