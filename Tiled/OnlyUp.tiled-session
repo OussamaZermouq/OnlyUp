@@ -5,16 +5,16 @@
     },
     "activeFile": "Levels/Level.tmx",
     "expandedProjectPaths": [
-        ".",
-        "Levels"
+        "Levels",
+        "."
     ],
     "fileStates": {
         "Levels/Level.tmx": {
-            "scale": 0.25,
+            "scale": 0.75,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": -678,
-                "y": 2380
+                "x": 770,
+                "y": 2696
             }
         },
         "Levels/tilesets/coin_tiles.tsx": {
