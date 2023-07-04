@@ -153,7 +153,7 @@ class Level:
             self.world_shift = -8
             player.speed=0
         else:
-            if player_y == 600:
+            if player_y < 800:
                 self.world_shift = 0
             player.speed=8
          
