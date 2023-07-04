@@ -1,5 +1,4 @@
 import pygame
-from blocks import Block
 from settings import *
 from support import *
 from player import Player
@@ -8,15 +7,15 @@ from support import import_csv_layout
 from tiles import Tile, StaticTile,Crate,Coin,Palm
 from enemy import Enemy
 from decoration import Sky, Clouds
-
-
+import time
 class Level:
     def __init__(self,level_data,surface):
         self.display_surface = surface
+
         #self.setup_level(level_data) 
-        self.world_shift=0
+        self.world_shift=10
         self.current_x = 0
-        
+
         #player
         player_layout = import_csv_layout(level_data['player'])
         self.player = pygame.sprite.GroupSingle()
@@ -107,7 +106,6 @@ class Level:
                     sprite_group_enemy.add(sprite)
 
         return sprite_group_enemy
-       
 
     def player_setup(self,layout):
         for row_index, row in enumerate(layout):
@@ -137,13 +135,17 @@ class Level:
     #                self.player.add(player)
 
 
-#note: seems that even if the player is below the trigger point it doesnt appear on the screen, make an infinite loop which can be broken when the player is back on frame
+#note: seems that even if the player is below the trigger 
+# point it doesnt appear on the screen, make an infinite 
+# loop which can be broken when the player is back on frame
+    
 
+    world_shift = -8
     def scroll_Y(self):
         player = self.player.sprite
         player_y = player.rect.centery
         direction_y = player.direction.y
-
+        
         if player_y<100 and direction_y < 0:
             self.world_shift = 8
             player.speed=0
@@ -151,10 +153,10 @@ class Level:
             self.world_shift = -8
             player.speed=0
         else:
-            self.world_shift = 0
+            if player_y == 600:
+                self.world_shift = 0
             player.speed=8
-        
-
+         
     def create_jump_particles(self,pos):
         jump_particle_sprite = ParticleEffect(pos,'jump')
         self.dust_sprite.add(jump_particle_sprite)
@@ -242,7 +244,6 @@ class Level:
         #level
         #self.blocks.update(self.world_shift)
         #self.blocks.draw(self.display_surface)
-        self.scroll_Y()
         #terrain
         self.terrain_sprites.update(self.world_shift)  
         self.terrain_sprites.draw(self.display_surface)
@@ -252,7 +253,6 @@ class Level:
         self.constraint_sprites.update(self.world_shift)
         self.enemy_collision_reverse()
         self.enemy_sprites.draw(self.display_surface)
-
 
         #crates
         self.crate_sprite.update(self.world_shift)
@@ -266,12 +266,14 @@ class Level:
         self.fg_palm_sprites.update(self.world_shift)
         self.fg_palm_sprites.draw(self.display_surface)
 
+
         #player_sprites
         self.player.update()
         self.player.draw(self.display_surface)
         self.goal.update(self.world_shift)
         self.goal.draw(self.display_surface)
 
+        
         #player methods
         self.player.update()
         self.get_player_on_ground()
@@ -279,4 +281,4 @@ class Level:
         self.create_landing_dust()
         self.horizontal_movement_collision()
         self.player.draw(self.display_surface) 
-
+        self.scroll_Y()

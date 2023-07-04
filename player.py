@@ -28,6 +28,8 @@ class Player (pygame.sprite.Sprite):
         self.on_ceiling = False
         self.on_left = False
         self.on_right = False
+        #x=64
+        #y=2688
 
     def import_character_assets(self):
         path='Assets/character/'
@@ -50,7 +52,6 @@ class Player (pygame.sprite.Sprite):
             self.jump()
             self.create_jump_particles(self.rect.midbottom)
     
-
     def animate(self):
         animation = self.animations[self.status]
 
@@ -97,8 +98,6 @@ class Player (pygame.sprite.Sprite):
                 flipped_dust_particle = pygame.transform.flip(dust_partcile,True,False)
                 self.display_surface.blit(flipped_dust_particle,pos)
 
-
-
     def import_dust_run_particle(self):
         self.dust_run_particle =import_folder('Assets/character/dust/run')
 
@@ -108,7 +107,6 @@ class Player (pygame.sprite.Sprite):
 
     def jump(self):
         self.direction.y = self.jump_speed
-
 
     def get_status(self):
         if self.direction.y < 0:
@@ -120,7 +118,6 @@ class Player (pygame.sprite.Sprite):
                 self.status = 'run'
             else:
                 self.status = 'idle'
-
 
     def update(self):
         self.get_input()

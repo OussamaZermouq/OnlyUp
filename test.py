@@ -1,33 +1,42 @@
 import pygame
+import pygame
 
-# Create a sprite group
-sprite_group = pygame.sprite.Group()
+# Set the desired window dimensions
+window_width = 800
+window_height = 600
 
-# Add some sprites to the group
-sprite1 = pygame.sprite.Sprite()
-sprite1.rect = pygame.Rect(100, 100, 50, 50)
-sprite_group.add(sprite1)
+# Set the desired initial y position
+initial_y = 500
 
-sprite2 = pygame.sprite.Sprite()
-sprite2.rect = pygame.Rect(200, 200, 30, 30)
-sprite_group.add(sprite2)
+# Initialize the game
+pygame.init()
+window = pygame.display.set_mode((window_width, window_height))
 
-# Calculate the bounding rectangle
-min_x = min_y = float('inf')
-max_x = max_y = float('-inf')
+# Create the player sprite
+player_image = pygame.Surface((50, 50))  # Placeholder surface for the player image
+player_rect = player_image.get_rect()
+player_rect.x = window_width // 2  # Set the initial x position to the middle of the window
+player_rect.y = initial_y  # Set the initial y position
 
-for sprite in sprite_group:
-    if sprite.rect.x < min_x:
-        min_x = sprite.rect.x
-    if sprite.rect.y < min_y:
-        min_y = sprite.rect.y
-    if sprite.rect.x + sprite.rect.width > max_x:
-        max_x = sprite.rect.x + sprite.rect.width
-    if sprite.rect.y + sprite.rect.height > max_y:
-        max_y = sprite.rect.y + sprite.rect.height
+# Camera system variables
+camera_offset_x = 0
+camera_offset_y = 0
 
-# Create the bounding rectangle
-bounding_rect = pygame.Rect(min_x, min_y, max_x - min_x, max_y - min_y)
+# Game loop
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
 
-# Print the bounding rectangle
-print(bounding_rect)
+    # Update game logic
+
+    # Update camera position based on player's position
+    camera_offset_y = -player_rect.y + window_height // 2
+
+    # Draw game objects
+    window.fill((0, 0, 0))  # Fill the window with black color
+    pygame.draw.rect(window, (255, 0, 0), player_rect.move(camera_offset_x, camera_offset_y))  # Draw the player sprite with camera offset
+    pygame.display.flip()
+
+pygame.quit()
