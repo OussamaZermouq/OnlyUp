@@ -8,7 +8,7 @@ class Enemy(AnimatedTile):
         super().__init__(size, x, y,'Tiled/graphics/enemy/run')
         self.rect.y += size - self.image.get_size()[1]
         self.speed = randint(3,5)
-        self.gravity = 0.8
+        #self.gravity = 0.8
         self.direction = pygame.math.Vector2(0,0)
     
     def move(self):

@@ -1,8 +1,10 @@
 import pygame
 from support import import_folder
+from math import sin
+
 class Player (pygame.sprite.Sprite):
 
-    def __init__(self,pos,surface,create_jump_particles):
+    def __init__(self,pos,surface,create_jump_particles,change_health):
         super().__init__()
         self.import_character_assets()
         self.frame_index=0
@@ -30,6 +32,11 @@ class Player (pygame.sprite.Sprite):
         self.on_right = False
         #x=64
         #y=2688
+        #health
+        self.change_health = change_health
+        self.invincible = False
+        self.invincibility_duration = 500
+        self.hurt_time = 0
 
     def import_character_assets(self):
         path='Assets/character/'
@@ -65,6 +72,13 @@ class Player (pygame.sprite.Sprite):
         else:
             flipped_player_image = pygame.transform.flip(player_image,flip_x = True,flip_y =False)
             self.image = flipped_player_image
+
+        if self.invincible:
+            #controle d'opacite
+            alpha = self.wave_value()
+            self.image.set_alpha(alpha)
+        else:
+            self.image.set_alpha(255)
 
         if self.on_ground and self.on_right:
             self.rect = self.image.get_rect(bottomright = self.rect.bottomright)
@@ -108,6 +122,19 @@ class Player (pygame.sprite.Sprite):
     def jump(self):
         self.direction.y = self.jump_speed
 
+    def get_damage(self):
+        if not self.invincible:
+            self.change_health(-10)
+            self.invincible = True
+            self.hurt_time = pygame.time.get_ticks()
+
+    def invincibility_timer(self):
+        if self.invincible:
+            current_time = pygame.time.get_ticks()
+            if current_time - self.hurt_time >= self.invincibility_duration:
+                self.invincible = False
+
+
     def get_status(self):
         if self.direction.y < 0:
             self.status = 'jump'
@@ -119,8 +146,18 @@ class Player (pygame.sprite.Sprite):
             else:
                 self.status = 'idle'
 
+
+    def wave_value(self):
+        value = sin(pygame.time.get_ticks())
+        if value>= 0:
+            return 255
+        else :
+            return 0
+
+
     def update(self):
         self.get_input()
         self.get_status()
         self.animate()
         self.run_dust_animation()
+        self.invincibility_timer()

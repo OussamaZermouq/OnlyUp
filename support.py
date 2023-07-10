@@ -39,4 +39,5 @@ def import_cut_graphic(path):
             new_surf = pygame.Surface((tile_size,tile_size),flags = pygame.SRCALPHA)   
             new_surf.blit(surface,(0,0),pygame.Rect(x,y,tile_size,tile_size))
             cut_tiles.append(new_surf)
+    
     return cut_tiles

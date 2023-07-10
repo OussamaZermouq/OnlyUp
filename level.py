@@ -15,7 +15,7 @@ import time
 
 
 class Level:
-    def __init__(self,current_level,surface,create_overworld):
+    def __init__(self,current_level,surface,create_overworld,change_coins,change_health):
         #self.level = Level(current_level,screen,self.create_overworld)
         #self.setup_level(level_data) 
         self.display_surface = surface
@@ -27,11 +27,12 @@ class Level:
         self.current_level = current_level
         level_data = levels[self.current_level]
         self.new_max_level = level_data['unlock']
+
         #player
         player_layout = import_csv_layout(level_data['player'])
         self.player = pygame.sprite.GroupSingle()
         self.goal = pygame.sprite.GroupSingle()
-        self.player_setup(player_layout)
+        self.player_setup(player_layout,change_health)
 
         #layout pour le terrain
         terrain_layout = import_csv_layout(level_data['terrain'])
@@ -57,9 +58,11 @@ class Level:
         constraint_layout = import_csv_layout(level_data['constraints'])
         self.constraint_sprites = self.create_tile_group(constraint_layout,'constraints')
 
+        #interface
+        self.change_coins = change_coins
 
         #music 
-        self.track = Music(random.randint(0,2))
+        self.track = Music(random.randint(0,3))
         self.track.run()
 
         #decoration
@@ -67,13 +70,19 @@ class Level:
         level_width = len(terrain_layout[0])* tile_size
         self.clouds = Clouds(400, level_width, 20)
 
+        #dust
         self.dust_sprite = pygame.sprite.GroupSingle()
         player_on_ground = False
+
+        #explosion
+        self.explosion_sprites= pygame.sprite.Group()
+
 
         #level setup 
         self.display_surface = surface
         self.current_level = current_level
         level_data = levels[current_level]
+
         #level_content = level_data['content']
         self.new_max_level = level_data['unlock']
 
@@ -103,6 +112,8 @@ class Level:
                             sprite = Palm(tile_size,x,y,'Tiled/graphics/terrain/palm_small',38)
                         if val =='1':
                             sprite = Palm(tile_size,x,y,'Tiled/graphics/terrain/palm_large',64)
+                        else:
+                            pass
                     if type == 'enemies':
                         sprite = Enemy(tile_size,x,y)
                     if type == 'constraints':
@@ -128,34 +139,19 @@ class Level:
 
         return sprite_group_enemy
 
-    def player_setup(self,layout):
+    def player_setup(self,layout,change_health):
         for row_index, row in enumerate(layout):
             for col_index,val in enumerate(row):
                 x = col_index * tile_size
                 y = row_index * tile_size        
                 if val == '0':
-                    sprite = Player((x,y),self.display_surface,self.create_jump_particles)
+                    sprite = Player((x,y),self.display_surface,self.create_jump_particles,change_health)
                     self.player.add(sprite)
                 if val == '1':
                     hat_surface = pygame.image.load('Assets/character/hat.png')
                     sprite = StaticTile(tile_size,x,y,hat_surface)
                     self.goal.add(sprite)
-
-    #def setup_level(self,layout):
-    #    self.blocks = pygame.sprite.Group() 
-    #    self.player = pygame.sprite.GroupSingle()
-    #    for row_index,row in enumerate(layout):
-    #        for col_index,col in enumerate(row):
-    #            x = col_index * tile_size
-    #            y = row_index * tile_size
-    #            if col == 'X':
-    #                block=Block((x,y),tile_size)
-    #                self.blocks.add(block)
-    #            if col == 'P':
-    #                player=Player((x,y),self.display_surface,self.create_jump_particles)
-    #                self.player.add(player)
     
-
     world_shift = -8
     def scroll_Y(self):
         player = self.player.sprite
@@ -204,7 +200,6 @@ class Level:
         if player.on_right and (player.rect.right > self.current_x or player.direction.x <= 0):
             player.on_right = False
 
-
     def vertical_movement_collision(self):
         player = self.player.sprite
         player.apply_gravity()
@@ -238,6 +233,23 @@ class Level:
         if player.on_ceiling and player.direction.y > 0:
             player.on_ceiling = False
 
+    #test si les collision sont horizontal ou vertical avec lenemie
+    def check_enemy_collisions(self):
+        enemy_collisions = pygame.sprite.spritecollide(self.player.sprite,self.enemy_sprites,False)
+        if enemy_collisions:
+            for enemy in enemy_collisions:
+                enemy_center = enemy.rect.centery
+                enemy_top = enemy.rect.top
+                enemy_bottom = enemy.rect.bottom
+                player_bottom = self.player.sprite.rect.bottom
+                if enemy_top < player_bottom < enemy_center and self.player.sprite.direction.y >=0:
+                    self.player.sprite.direction.y = -15
+                    explosion_sprite = ParticleEffect(enemy.rect.center,'explosion')
+                    self.explosion_sprites.add(explosion_sprite)
+                    enemy.kill()
+                else:
+                    self.player.sprite.get_damage()
+
     def create_landing_dust(self):
         if not self.player_on_ground and self.player.sprite.on_ground and not self.dust_sprite.sprites():
             if self.player.sprite.facing_right:
@@ -248,8 +260,8 @@ class Level:
             self.dust_sprite.add(fall_dust)
 
     def check_death(self):
-        #si le joueur tombe au dessous de l'ecran + 400, il meurt 
-        if self.player.sprite.rect.top>(SCREEN_HEIGHT + 400 ) and self.player.sprite.direction.y>0:
+        #si le joueur tombe au dessous de l'ecran + 400 px , il meurt 
+        if self.player.sprite.rect.top>(SCREEN_HEIGHT + 2000 ) and self.player.sprite.direction.y>0:
             self.create_overworld(self.current_level,0)
             self.track.stop()
 
@@ -258,6 +270,16 @@ class Level:
             self.create_overworld(self.current_level, self.new_max_level)
             self.track.stop()            
     
+    def check_coin_collisions(self):
+        pygame.mixer.init()
+        player = self.player.sprite
+        for coin in self.coin_sprites.sprites():
+            if coin.rect.colliderect(player.rect):
+                #ajouter le son de collecte des coins
+                self.change_coins(1)
+                #on utilise une chaine differente pour ne pas ecraser les sons deja execute
+                pygame.mixer.Channel(1).play(pygame.mixer.Sound("Assets/Music/coin_effect.mp3"))
+                coin.kill()
     
     def run(self):
         #decoration
@@ -272,7 +294,7 @@ class Level:
         #self.blocks.update(self.world_shift)
         #self.blocks.draw(self.display_surface)
         #terrain
-        self.terrain_sprites.update(self.world_shift)  
+        self.terrain_sprites.update(self.world_shift)
         self.terrain_sprites.draw(self.display_surface)
 
         #enemy
@@ -280,6 +302,8 @@ class Level:
         self.constraint_sprites.update(self.world_shift)
         self.enemy_collision_reverse()
         self.enemy_sprites.draw(self.display_surface)
+        self.explosion_sprites.update(self.world_shift)
+        self.explosion_sprites.draw(self.display_surface)
 
         #crates
         self.crate_sprite.update(self.world_shift)
@@ -294,7 +318,6 @@ class Level:
         self.fg_palm_sprites.draw(self.display_surface)
 
         
-
         #player_sprites
         self.player.update()
         self.player.draw(self.display_surface)
@@ -311,5 +334,8 @@ class Level:
         self.player.draw(self.display_surface) 
         self.scroll_Y()
         
+        self.check_coin_collisions()
+        self.check_enemy_collisions()
+
         self.check_death()
         self.check_win()
