@@ -7,19 +7,31 @@ from overworld import Overworld
 
 class Game:
     def __init__(self):
-        self.max_level =2
-        self.overworld = Overworld(2,self.max_level,screen)
+        self.max_level =0
+        self.overworld = Overworld(0,self.max_level,screen,self.create_level)
+        self.status = 'overworld'
+
+    def create_level(self,current_level):
+        self.level = Level(current_level,screen,self.create_overworld)
+        self.status = 'level'
+
+    def create_overworld(self,current_level,new_max_level):
+        if new_max_level > self.max_level:
+            self.max_level = new_max_level
+        self.overworld = Overworld(current_level,self.max_level,screen,self.create_level)
+        self.status = 'overworld'
+
     def run(self):
-        self.overworld.run()
-        
+        if self.status == 'overworld':
+            self.overworld.run()
+        else:
+            self.level.run()
+
 pygame.init()
 screen=pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
 clock=pygame.time.Clock()
-level = Level(level_0,screen)
 game = Game()
-pygame.mixer.init()
-pygame.mixer.music.load("Assets/Music/song0.mp3")
-#pygame.mixer.music.play(-1)
+
 
 
 while True:
@@ -27,8 +39,8 @@ while True:
         if event.type==pygame.QUIT:
             pygame.quit()
             sys.exit()
-
-    level.run()
-    #game.run()
+    screen.fill('grey')
+    #level.run()
+    game.run()
     pygame.display.update()
     clock.tick(60)

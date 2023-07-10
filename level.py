@@ -7,15 +7,26 @@ from support import import_csv_layout
 from tiles import Tile, StaticTile,Crate,Coin,Palm
 from enemy import Enemy
 from decoration import Sky, Clouds
+from game_data import levels
+from game_data import levels
+from music import Music
+import random
 import time
-class Level:
-    def __init__(self,level_data,surface):
-        self.display_surface = surface
 
+
+class Level:
+    def __init__(self,current_level,surface,create_overworld):
+        #self.level = Level(current_level,screen,self.create_overworld)
         #self.setup_level(level_data) 
+        self.display_surface = surface
         self.world_shift=10
         self.current_x = 0
 
+        #overword connection
+        self.create_overworld = create_overworld
+        self.current_level = current_level
+        level_data = levels[self.current_level]
+        self.new_max_level = level_data['unlock']
         #player
         player_layout = import_csv_layout(level_data['player'])
         self.player = pygame.sprite.GroupSingle()
@@ -45,7 +56,11 @@ class Level:
         #constraints
         constraint_layout = import_csv_layout(level_data['constraints'])
         self.constraint_sprites = self.create_tile_group(constraint_layout,'constraints')
-                
+
+
+        #music 
+        self.track = Music(random.randint(0,2))
+        self.track.run()
 
         #decoration
         self.sky = Sky(20)
@@ -55,6 +70,12 @@ class Level:
         self.dust_sprite = pygame.sprite.GroupSingle()
         player_on_ground = False
 
+        #level setup 
+        self.display_surface = surface
+        self.current_level = current_level
+        level_data = levels[current_level]
+        #level_content = level_data['content']
+        self.new_max_level = level_data['unlock']
 
     def enemy_collision_reverse(self):
         for enemy in self.enemy_sprites.sprites():
@@ -133,11 +154,6 @@ class Level:
     #            if col == 'P':
     #                player=Player((x,y),self.display_surface,self.create_jump_particles)
     #                self.player.add(player)
-
-
-#note: seems that even if the player is below the trigger 
-# point it doesnt appear on the screen, make an infinite 
-# loop which can be broken when the player is back on frame
     
 
     world_shift = -8
@@ -231,7 +247,18 @@ class Level:
             fall_dust = ParticleEffect(self.player.sprite.rect.midbottom - offset,'land')
             self.dust_sprite.add(fall_dust)
 
+    def check_death(self):
+        #si le joueur tombe au dessous de l'ecran + 400, il meurt 
+        if self.player.sprite.rect.top>(SCREEN_HEIGHT + 400 ) and self.player.sprite.direction.y>0:
+            self.create_overworld(self.current_level,0)
+            self.track.stop()
 
+    def check_win(self):
+        if pygame.sprite.spritecollide(self.player.sprite,self.goal,False):
+            self.create_overworld(self.current_level, self.new_max_level)
+            self.track.stop()            
+    
+    
     def run(self):
         #decoration
         self.sky.draw(self.display_surface)
@@ -266,6 +293,7 @@ class Level:
         self.fg_palm_sprites.update(self.world_shift)
         self.fg_palm_sprites.draw(self.display_surface)
 
+        
 
         #player_sprites
         self.player.update()
@@ -282,3 +310,6 @@ class Level:
         self.horizontal_movement_collision()
         self.player.draw(self.display_surface) 
         self.scroll_Y()
+        
+        self.check_death()
+        self.check_win()
